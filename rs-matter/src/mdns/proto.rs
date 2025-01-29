@@ -128,12 +128,16 @@ impl Host<'_> {
         self.add_ipv6(&mut answer, ttl_sec)?;
 
         services.for_each(|service| {
+            // TODO: Apple commissioning - since Apple commissions > 1 fabric
+            // we are overflowing the DNS broadcast record.
+            // Temporarily comment out a few records to make it work.
+
             service.add_service(&mut answer, self.hostname, ttl_sec)?;
             service.add_service_type(&mut answer, ttl_sec)?;
-            service.add_service_subtypes(&mut answer, ttl_sec)?;
+            //service.add_service_subtypes(&mut answer, ttl_sec)?;
             service.add_dns_sd_service_type(&mut answer, ttl_sec)?;
-            service.add_dns_sd_service_subtypes(&mut answer, ttl_sec)?;
-            service.add_txt(&mut answer, ttl_sec)?;
+            //service.add_dns_sd_service_subtypes(&mut answer, ttl_sec)?;
+            //service.add_txt(&mut answer, ttl_sec)?;
 
             Ok(())
         })?;
@@ -509,6 +513,7 @@ impl Service<'_> {
         ))
     }
 
+    #[allow(unused)]
     fn add_service_subtypes<R, T>(&self, answer: &mut R, ttl_sec: u32) -> Result<(), PushError>
     where
         R: RecordSectionBuilder<T>,
